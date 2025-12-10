@@ -1,0 +1,33 @@
+{
+  "name": "hotel-management-api",
+  "version": "1.0.0",
+  "description": "Hotel Management System REST API with Node.js and PostgreSQL",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "keywords": [
+    "hotel",
+    "management",
+    "nodejs",
+    "postgresql",
+    "rest-api"
+  ],
+  "author": {
+    "email": "sadiridinovotabek@gmail.com",
+    "name": "Otabek, Firdavs, Alimjan, Ahmad",
+    "url": "https://github.com/otabekoff/hotel"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "ketmon": "^1.0.0",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

@@ -1,0 +1,516 @@
+### Hotel Management API - REST Client File
+### Use with VS Code REST Client Extension (humao.rest-client)
+
+@baseUrl = http://localhost:3001/api
+
+### ==========================================
+### HEALTH & INFO ENDPOINTS
+### ==========================================
+
+### Get API Info
+GET http://localhost:3001
+
+###
+
+### Health Check
+GET http://localhost:3001/health
+
+### ==========================================
+### ROOM TYPES ENDPOINTS
+### ==========================================
+
+### Get All Room Types
+# Returns a list of all room types available in the hotel
+GET {{baseUrl}}/roomtypes
+
+###
+
+### Get Single Room Type by ID
+# Returns details of a specific room type
+# @param id - Room type ID (integer)
+GET {{baseUrl}}/roomtypes/1
+
+###
+
+### Create New Room Type
+# Creates a new room type category
+# Required fields: name, base_price
+# Optional fields: description, max_occupancy, amenities
+POST {{baseUrl}}/roomtypes
+Content-Type: application/json
+
+{
+    "name": "Presidential Suite",
+    "description": "The most luxurious suite with panoramic city views",
+    "base_price": 500.00,
+    "max_occupancy": 4,
+    "amenities": ["WiFi", "TV", "AC", "Mini Bar", "Jacuzzi", "Butler Service", "Private Terrace"]
+}
+
+###
+
+### Update Room Type
+# Updates an existing room type
+# All fields are optional - only provided fields will be updated
+# @param id - Room type ID to update
+PUT {{baseUrl}}/roomtypes/1
+Content-Type: application/json
+
+{
+    "base_price": 120.00,
+    "description": "Updated comfortable room with enhanced amenities"
+}
+
+###
+
+### Delete Room Type
+# Deletes a room type and all associated rooms (CASCADE)
+# @param id - Room type ID to delete
+DELETE {{baseUrl}}/roomtypes/5
+
+###
+
+### Get All Rooms of a Room Type (JOIN ENDPOINT)
+# Returns all rooms belonging to a specific room type
+# Includes room type details in response
+# @param id - Room type ID
+GET {{baseUrl}}/roomtypes/1/rooms
+
+### ==========================================
+### ROOMS ENDPOINTS
+### ==========================================
+
+### Get All Rooms
+# Returns all rooms with their room type information
+GET {{baseUrl}}/rooms
+
+###
+
+### Get Single Room by ID
+# Returns a specific room with its room type details
+# @param id - Room ID (integer)
+GET {{baseUrl}}/rooms/1
+
+###
+
+### Create New Room
+# Creates a new room in the hotel
+# Required fields: room_number, room_type_id, floor, price_per_night
+# Optional fields: status (default: 'available')
+# Status options: 'available', 'occupied', 'maintenance', 'reserved'
+POST {{baseUrl}}/rooms
+Content-Type: application/json
+
+{
+    "room_number": "401",
+    "room_type_id": 2,
+    "floor": 4,
+    "status": "available",
+    "price_per_night": 200.00
+}
+
+###
+
+### Update Room
+# Updates an existing room
+# All fields are optional
+# @param id - Room ID to update
+PUT {{baseUrl}}/rooms/1
+Content-Type: application/json
+
+{
+    "status": "maintenance",
+    "price_per_night": 110.00
+}
+
+###
+
+### Delete Room
+# Deletes a room from the system
+# @param id - Room ID to delete
+DELETE {{baseUrl}}/rooms/8
+
+###
+
+### Get All Reviews for a Room (JOIN ENDPOINT)
+# Returns all reviews for a specific room with customer information
+# @param id - Room ID
+GET {{baseUrl}}/rooms/1/reviews
+
+###
+
+### Get All Bookings for a Room (JOIN ENDPOINT)
+# Returns all bookings for a specific room with customer information
+# @param id - Room ID
+GET {{baseUrl}}/rooms/1/bookings
+
+###
+
+### Create Review for a Room
+# Adds a new review for a specific room
+# Required fields: customer_id, rating (1-5)
+# Optional fields: comment
+# @param roomId - Room ID to review
+POST {{baseUrl}}/rooms/1/reviews
+Content-Type: application/json
+
+{
+    "customer_id": 1,
+    "rating": 5,
+    "comment": "Excellent room! Very clean and comfortable. The view was amazing."
+}
+
+### ==========================================
+### CUSTOMERS ENDPOINTS
+### ==========================================
+
+### Get All Customers
+# Returns a list of all registered customers
+GET {{baseUrl}}/customers
+
+###
+
+### Get Single Customer by ID
+# Returns details of a specific customer
+# @param id - Customer ID (integer)
+GET {{baseUrl}}/customers/1
+
+###
+
+### Create New Customer
+# Registers a new customer in the system
+# Required fields: first_name, last_name, email
+# Optional fields: phone, address, id_type, id_number
+POST {{baseUrl}}/customers
+Content-Type: application/json
+
+{
+    "first_name": "Alice",
+    "last_name": "Johnson",
+    "email": "alice.johnson@email.com",
+    "phone": "+1555123456",
+    "address": "789 Pine Road, Village",
+    "id_type": "passport",
+    "id_number": "CD789012"
+}
+
+###
+
+### Update Customer
+# Updates an existing customer's information
+# All fields are optional
+# @param id - Customer ID to update
+PUT {{baseUrl}}/customers/1
+Content-Type: application/json
+
+{
+    "phone": "+1234567899",
+    "address": "456 Updated Street, New City"
+}
+
+###
+
+### Delete Customer
+# Deletes a customer and all associated bookings/reviews (CASCADE)
+# @param id - Customer ID to delete
+DELETE {{baseUrl}}/customers/3
+
+###
+
+### Get All Bookings of a Customer (JOIN ENDPOINT)
+# Returns all bookings made by a customer with room details
+# @param id - Customer ID
+GET {{baseUrl}}/customers/1/bookings
+
+###
+
+### Get All Reviews by a Customer (JOIN ENDPOINT)
+# Returns all reviews written by a customer with room information
+# @param id - Customer ID
+GET {{baseUrl}}/customers/1/reviews
+
+### ==========================================
+### BOOKINGS ENDPOINTS
+### ==========================================
+
+### Get All Bookings
+# Returns all bookings with customer and room information
+GET {{baseUrl}}/bookings
+
+###
+
+### Get Single Booking by ID
+# Returns a specific booking with full details (customer, rooms)
+# @param id - Booking ID (integer)
+GET {{baseUrl}}/bookings/1
+
+###
+
+### Create New Booking (with multiple rooms)
+# Creates a new booking, optionally assigning multiple rooms
+# Required fields: customer_id, check_in_date, check_out_date
+# Optional fields: status, special_requests, room_ids (array)
+# Status options: 'pending', 'confirmed', 'checked_in', 'checked_out', 'cancelled'
+# Total amount is automatically calculated based on rooms and nights
+POST {{baseUrl}}/bookings
+Content-Type: application/json
+
+{
+    "customer_id": 1,
+    "check_in_date": "2025-01-15",
+    "check_out_date": "2025-01-20",
+    "status": "pending",
+    "special_requests": "Early check-in requested. Non-smoking room preferred.",
+    "room_ids": [1, 3]
+}
+
+###
+
+### Create Booking without Rooms
+# Creates a booking that can have rooms assigned later
+POST {{baseUrl}}/bookings
+Content-Type: application/json
+
+{
+    "customer_id": 2,
+    "check_in_date": "2025-02-01",
+    "check_out_date": "2025-02-05",
+    "special_requests": "Honeymoon package requested"
+}
+
+###
+
+### Update Booking
+# Updates an existing booking
+# Can update details or reassign rooms (provide room_ids array)
+# @param id - Booking ID to update
+PUT {{baseUrl}}/bookings/1
+Content-Type: application/json
+
+{
+    "status": "confirmed",
+    "check_out_date": "2025-01-22",
+    "special_requests": "Extended stay - late checkout requested"
+}
+
+###
+
+### Update Booking Rooms
+# Replaces all room assignments for a booking
+# Recalculates total amount automatically
+# @param id - Booking ID to update
+PUT {{baseUrl}}/bookings/1
+Content-Type: application/json
+
+{
+    "room_ids": [2, 4, 5]
+}
+
+###
+
+### Delete Booking
+# Deletes a booking and all associated room_bookings (CASCADE)
+# @param id - Booking ID to delete
+DELETE {{baseUrl}}/bookings/3
+
+###
+
+### Get Payment for a Booking (JOIN ENDPOINT)
+# Returns payment information for a specific booking
+# @param id - Booking ID
+GET {{baseUrl}}/bookings/1/payment
+
+###
+
+### Assign Room to Booking (Room_Bookings)
+# Adds a specific room to an existing booking
+# @param bookingId - Booking ID
+# @param roomId - Room ID to assign
+POST {{baseUrl}}/bookings/1/rooms/2
+
+###
+
+### Remove Room from Booking (Room_Bookings)
+# Removes a specific room from a booking
+# @param bookingId - Booking ID
+# @param roomId - Room ID to remove
+DELETE {{baseUrl}}/bookings/1/rooms/2
+
+###
+
+### Create Payment for a Booking
+# Creates a payment record for a booking (one-to-one relationship)
+# Required fields: amount, payment_method
+# Optional fields: payment_status, transaction_id
+# Payment methods: 'cash', 'credit_card', 'debit_card', 'bank_transfer', 'online'
+# Payment status: 'pending', 'completed', 'failed', 'refunded'
+# Note: If payment_status is 'completed', booking status is auto-updated to 'confirmed'
+# @param bookingId - Booking ID to create payment for
+POST {{baseUrl}}/bookings/1/payment
+Content-Type: application/json
+
+{
+    "amount": 500.00,
+    "payment_method": "credit_card",
+    "payment_status": "completed",
+    "transaction_id": "TXN-2025-001234"
+}
+
+### ==========================================
+### PAYMENTS ENDPOINTS
+### ==========================================
+
+### Get All Payments
+# Returns all payments with booking and customer information
+GET {{baseUrl}}/payments
+
+###
+
+### Get Single Payment by ID
+# Returns a specific payment with booking details
+# @param id - Payment ID (integer)
+GET {{baseUrl}}/payments/1
+
+###
+
+### Update Payment
+# Updates payment status or details
+# Useful for marking payments as completed, failed, or refunded
+# @param id - Payment ID to update
+PUT {{baseUrl}}/payments/1
+Content-Type: application/json
+
+{
+    "payment_status": "completed",
+    "transaction_id": "TXN-2025-UPDATED"
+}
+
+###
+
+### Get Booking Info for a Payment (JOIN ENDPOINT)
+# Returns full booking details (with customer and rooms) for a payment
+# @param id - Payment ID
+GET {{baseUrl}}/payments/1/booking
+
+### ==========================================
+### REVIEWS ENDPOINTS
+### ==========================================
+
+### Get All Reviews
+# Returns all reviews with room and customer information
+GET {{baseUrl}}/reviews
+
+###
+
+### Get Single Review by ID
+# Returns a specific review with room and customer details
+# @param id - Review ID (integer)
+GET {{baseUrl}}/reviews/1
+
+###
+
+### Update Review
+# Updates an existing review
+# Only rating and comment can be updated
+# @param id - Review ID to update
+PUT {{baseUrl}}/reviews/1
+Content-Type: application/json
+
+{
+    "rating": 4,
+    "comment": "Updated review: Great room, but the AC was a bit noisy."
+}
+
+###
+
+### Delete Review
+# Deletes a review from the system
+# @param id - Review ID to delete
+DELETE {{baseUrl}}/reviews/2
+
+### ==========================================
+### SAMPLE WORKFLOW: Complete Booking Process
+### ==========================================
+
+### Step 1: Create a new customer
+# POST {{baseUrl}}/customers
+# Content-Type: application/json
+# 
+# {
+#     "first_name": "Bob",
+#     "last_name": "Williams",
+#     "email": "bob.williams@email.com",
+#     "phone": "+1999888777"
+# }
+
+### Step 2: Check available rooms
+# GET {{baseUrl}}/rooms
+
+### Step 3: Create a booking with selected rooms
+# POST {{baseUrl}}/bookings
+# Content-Type: application/json
+# 
+# {
+#     "customer_id": 3,
+#     "check_in_date": "2025-03-01",
+#     "check_out_date": "2025-03-05",
+#     "room_ids": [1, 2]
+# }
+
+### Step 4: Create payment for the booking
+# POST {{baseUrl}}/bookings/2/payment
+# Content-Type: application/json
+# 
+# {
+#     "amount": 800.00,
+#     "payment_method": "credit_card",
+#     "payment_status": "completed"
+# }
+
+### Step 5: After checkout, customer leaves a review
+# POST {{baseUrl}}/rooms/1/reviews
+# Content-Type: application/json
+# 
+# {
+#     "customer_id": 3,
+#     "rating": 5,
+#     "comment": "Amazing stay! Will definitely come back."
+# }
+
+### ==========================================
+### ERROR HANDLING EXAMPLES
+### ==========================================
+
+### Example: Invalid Room Type ID (should return 400)
+# POST {{baseUrl}}/rooms
+# Content-Type: application/json
+# 
+# {
+#     "room_number": "999",
+#     "room_type_id": 999,
+#     "floor": 1,
+#     "price_per_night": 100.00
+# }
+
+### Example: Duplicate Email (should return 400)
+# POST {{baseUrl}}/customers
+# Content-Type: application/json
+# 
+# {
+#     "first_name": "Test",
+#     "last_name": "User",
+#     "email": "john.doe@email.com"
+# }
+
+### Example: Rating Out of Range (should return 400)
+# POST {{baseUrl}}/rooms/1/reviews
+# Content-Type: application/json
+# 
+# {
+#     "customer_id": 1,
+#     "rating": 10,
+#     "comment": "Invalid rating"
+# }
+
+### Example: Resource Not Found (should return 404)
+# GET {{baseUrl}}/customers/9999
